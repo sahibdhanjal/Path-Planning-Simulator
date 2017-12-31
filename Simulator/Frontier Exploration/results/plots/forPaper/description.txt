@@ -1,0 +1,28 @@
+all_infoGain
+------------
+
+We used 6 robots in the free map (50 x  50 cells) and measured the frequency of Information Gain, i.e., the number of time steps in which infoGain was 0, number of time steps in which infoGain was 1, etc. We measured this for all approaches (Burgard, Puig, Proposed). In our approach, there was no step in which infoGain was 0.
+
+
+all_iterations
+--------------
+
+Shows completion times (in terms of time steps) for 2, 4, 6, 8, and 10 robots in the free map (50 x 50 cells) for all approaches.
+
+
+all_redundancy
+--------------
+
+Shows percentage redundancy for 2, 4, 6, 8, and 10 robots in the free map for all approaches.
+
+
+FC_dispersion
+-------------
+
+Shows the dispersion of cluster centroids using our approach in a free map with 9 robots starting in the centre of the map.
+
+
+FC_sensitivity
+--------------
+
+This shows the completion times using our approach for 2, 4, 6, 8, and 10 robots for 3 maps (free map, outdoor, and office). Snapshots of the map have been enclosed in the folder. Note that office map contains 2141 free cells, outdoor has 1824, and free map has 2500 free cells. All maps are of size 50 x 50 cells. It takes longer to explore the office map compared to the outdoor and free maps. Outdoor map takes the least amount of time for two reasons. i) Robots only have to cover 1824 cells, as opposed to 2500 in free map. ii) Since there are no contiguous obstacles, robots can easily navigate around them.

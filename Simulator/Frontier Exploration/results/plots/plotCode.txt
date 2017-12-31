@@ -1,0 +1,3 @@
+set ylabel "Number of Iterations"
+set xlabel "Number of Robots"
+plot 'test.dat' using 2:xtic(1) ti col lw 2 ps 1.5 pt 15, '' using 3 ti col lw 2 ps 1.5 pt 7, '' using 4 ti col lw 2 ps 2.5 pt 9, '' using 5 ti col lw 2 ps 1.5 pt 5

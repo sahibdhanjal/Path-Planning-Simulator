@@ -1,0 +1,65 @@
+# all_iterations
+# NumRobots Burgard Puig Proposed LowerBound
+# 2 1858 1636 1448 1250
+# 4 954 850 728 625
+# 6 652 600 541 417
+# 8 501 450 401 313
+# 10 389 382 322 250
+
+# all_redundancy
+# NumRobots Burgard Puig Proposed
+# 2 12 5 13
+# 4 34 14 16
+# 6 36 24 22
+# 8 37 29 21
+# 10 35 43 20
+
+# sensitivity_to_maps
+# Numrobots Free Outdoor Office
+# 2 1448 1228 1478
+# 4 728 707 765
+# 6 541 430 562
+# 8 401 336 477
+# 10 382 252 389
+
+# all_infoGain
+# FreqOfInfoGain Burgard Puig Proposed
+# 0 21 11 0
+# 1 35 43 13
+# 2 44 55 26
+# 3 136 80 54
+# 4 197 114 126
+# 5 133 141 163
+# 6 86 156 159
+
+# all_underutilization
+# Underutilization Burgard Puig Proposed
+# 2 1216 774 390
+# 4 1316 907 398
+# 6 1412 1110 746
+# 8 1508 1052 733
+# 10 1930 1330 692
+
+# timeSteps_office
+# NumRobots Proposed(Old) Awesome Lowerbound
+# 2 2454 1236 1071
+# 4 1549 644 536
+# 6 612 429 357
+# 8 513 322 268
+# 10 412 274 215
+
+# timeSteps_outdoor
+# NumRobots Proposed(Old) Awesome Lowerbound
+# 2 1549 1099 912
+# 4 707 576 456
+# 6 483 391 304
+# 8 341 320 228
+# 10 252 262 183
+
+# timeSteps_freeWorld
+NumRobots Proposed(Old) Awesome Lowerbound
+2 1448 1250 1250
+4 728 646 625
+6 541 435 417
+8 401 332 313
+10 382 273 250

@@ -1,0 +1,18 @@
+22nd December 2014
+------------------
+
+New version re-written from scratch. A* implemented in place of Manhattan distance.
+
+
+21st December 2014
+------------------
+
+Version1 abandoned.
+
+
+20th December 2014
+------------------
+
+Fixed the following bug. When computing the utility of a config, we were'nt considering whether multiple robots would occupy the same cell or not. In fact we were only checking if a robot was moving into a cell that was previously unoccupied. For example, if 2 robots had to move to (1, 1), then the move was allowed if (1, 1) was found to be free at that instant. The robot with the lower id would move into that cell (because it would perform its movement before the other robot) and would block the other robot from entering that cell.
+
+Also included a few lines of code in the 'Final Coverage Status' section that would print the percentage of cells visited and the percentage of cells left unvisited.

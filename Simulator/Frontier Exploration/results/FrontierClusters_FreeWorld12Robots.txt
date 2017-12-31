@@ -1,0 +1,10 @@
+Read the config file freeworld_large.config
+volume: 18
+visitednow 21
+redundancy: 0
+totalMoves: 9
+volume: 29
+visitednow 31
+redundancy: 2
+totalMoves: 21
+volume: 35

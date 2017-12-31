@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>pathplanners</name>
+  <version>1.0.0</version>
+  <description>The Path Planners package written by Sahib Singh Dhanjal, BITS Pilani. </description>
+  <maintainer email="sahibdhanjal@bits-apogee.org">Sahib Singh Dhanjal</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>nav_core</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  
+  <run_depend>nav_core</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+    <nav_core plugin="${prefix}/pathplanners_plugin.xml" />
+  </export>
+  
+</package>
