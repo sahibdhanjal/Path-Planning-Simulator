@@ -15,3 +15,4 @@ Python based simulator for path planning algorithms such as A*, JPS, Dijkstra, e
 </ol>
 
 <p>JPS was found to be the best performing algorithm on the simulator as well as the Turtlebot.</p>
+<iframe src="https://github.com/sahibdhanjal/Path-Planning-Simulator/blob/master/JavaScript%20Simulator/Path%20Planners.html" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" ></iframe>
