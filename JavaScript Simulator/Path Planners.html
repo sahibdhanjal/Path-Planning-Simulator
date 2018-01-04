@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	    <title>Path Planning Simulator</title>
+	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		
+		<link rel="stylesheet" type="text/css" href="Path Planners.css">
+
+		<script type="text/javascript">
+			var algo;
+			function setAlgo(algo) {
+				init(algo);
+				context = document.getElementById("myCanvas").getContext("2d");
+				context.clearRect(0, 0, canvas.width, canvas.height);
+			}
+
+			function disappear() {
+			    var x = document.getElementById("textbar");
+			    if (x.style.display === "none") {
+			        x.style.display = "block";
+			    } else {
+			        x.style.display = "none";
+			    }
+			}
+		</script>
+	    
+	</head>
+
+	<body >
+		<h2 style="font-family: sans-serif; color:#3D2A24; text-align: center; width: 1000px ">Path Planner Simulation</h2>
+
+		
+		<div id="SearchAlgo">
+			<input type="button" title="Click to Start" value="Depth First Search" onclick="setAlgo(0)">
+			<input type="button" title="Click to Start" value="Breadth First Search" onclick="setAlgo(1)">
+			<input type="button" title="Click to Start" value="Greddy Best First" onclick="setAlgo(2)">
+			<input type="button" title="Click to Start" value="Dijkstra" onclick="setAlgo(3)">
+			<input type="button" title="Click to Start" value="A-Star" onclick="setAlgo(4)">
+			<input type="button" title="Click to Start" value="RRT" onclick="setAlgo(5)">
+			<input type="button" title="Click to Start" value="RRT-Connect" onclick="setAlgo(6)">
+			<input type="button" title="Click to Start" value="RRT-Star" onclick="setAlgo(7)">
+		</div>
+		
+		<button id="toggle" title="Toggle On/Off " onclick="disappear()"><strong>x</strong></button>
+		
+		<div id="textbar"></div>
+
+		<canvas id="myCanvas" width = 1000 height = 800> </canvas>
+		
+		<p>
+			<strong>NOTE</strong>: Currently <em>A-Star / Greedy Best First Search</em> use the <em>Euclidean Heuristic</em>, however multiple options are there in the code. Just one map has been created for this simulator as of now, however, you can create multiple maps of your own using the Python Based Simulator in the repository.
+			You can alter the default start and goal points by modifying the URL:
+			<br>
+			<strong>../Path-Planning-Simulator/JavaScript Simulator/Path Planners.html?q_init=[0.0,0.5]?q_goal=[4.3,4.4]</strong>
+		</p>
+
+	    <script type="text/javascript" src="Path Planners.js"></script>
+	</body>
+</html>

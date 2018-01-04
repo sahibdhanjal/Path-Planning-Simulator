@@ -1,56 +1,55 @@
-<!DOCTYPE html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-</head>
-
-<body onload="init()">
-Path Planner Simulation
-<br>
-
-<canvas id="myCanvas" width=800 height=800 style="z-index: 10 ;border:1px solid #000000;">
-</canvas> 
-
-<script>
-
 //////////////////////////////////////////////////
-/////     INITIALIZATION FUNCTION DEFINITONS
+/////     MAIN LOOP
 //////////////////////////////////////////////////
 
-function init() {
 
-    // initialize search variables, data structures, DOM elements, etc.
-    initSearch();
+function init(algo) {
+	search_alg="";
 
-    // start main animation/iteration loop 
+	// get user input as to which algorith to use
+	switch(algo){
+		case 0:
+			search_alg = "depth-first";
+			break;
+		case 1:
+			search_alg = "breadth-first";
+			break;
+		case 2:
+			search_alg = "greedy-best-first";
+			break;
+		case 3:
+			search_alg = "dijkstra";
+			break;
+		case 4:
+			search_alg = "A-star";
+			break;
+		case 5:
+			search_alg = "RRT";
+			break;
+		case 6:
+			search_alg = "RRT-connect";
+			break;
+		case 7:
+			search_alg = "RRT-star";
+			break;
+	}
+
+    initSearch(algo);
     animate();
 }
 
+
+//////////////////////////////////////////////////
+/////     SEARCH INITIALIZATION LOOP
+//////////////////////////////////////////////////
+
+
 function initSearch() {
-
-    // specify default search algorithm to use for planning
-    // search_alg = "depth-first";  
-    // search_alg = "breadth-first";  
-    // search_alg = "greedy-best-first";
-    // search_alg = "dijkstra"
-    search_alg = "A-star";  
-    //search_alg = "RRT";  
-    //search_alg = "RRT-connect";  
-    //search_alg = "RRT-star";  
-
-    // specify default the world for the planner 
-    //  (stored as "range" global variable with name "planning_scene")
-    //planning_scene = "empty";
-    //planning_scene = "misc";
-    planning_scene = "narrow1";
-    //planning_scene = "narrow2";
-    //planning_scene = "three_sections";
-
-    // specify default eps (epsilon) spatial resolution variable
-    //   for RRT, specifies threshold radius for step size and reaching goal
+	// World defined by self
+    planning_scene = "multi_part";
+    
+    // eps defines the density of the grid cells
     eps = 0.1;
-
-
-    // Global variable for path defintiton
     path = [];
 
     // create event handlers for the mouse
@@ -72,29 +71,19 @@ function initSearch() {
     // when the mouse button is released, update mouseDown
     canvas.onmouseup = function() {
         mouseDown = 0;
-        // q_goal = [xformViewWorldX(mouse_x),xformViewWorldY(mouse_y)];
-
-        // IMPORTANT: mouse_x and mouse_y are in absolute coordinates with
-        //    respect to the browser window, and in units of pixels.  The
-        //    xformViewWorldX only considers relative coordinates for the
-        //    canvas element.
     };
 
-    // specify start and goal configurations
-    q_start_config = [0,0];
-    q_goal_config = [4,4];
+    // Set the Start and Goal Points on the Canvas
+    q_init = [-1.2,-1.2];
+    q_goal = [5.3, 3.5];
 
-    q_init = q_start_config;
-    q_goal = q_goal_config;
-    
-    // Fixed code for parsing full url to get input parameters as given
+        // Fixed code for parsing full url to get input parameters as given
     var url_parsed = window.location.href.split("?");
     for (i=1;i<url_parsed.length;i++) {
         var param_parsed = url_parsed[i].split("=");
         // console.log(param_parsed[0],param_parsed[1]);
         // eval(param_parsed[0]+"=\'"+param_parsed[1]+"\'");
         var param = param_parsed[0] ; var arg = param_parsed[1];
-
         switch(param) {
             case "q_init":
                 arg = arg.slice(1,arg.length-1);
@@ -106,135 +95,69 @@ function initSearch() {
                 var args = arg.split(",");
                 q_goal[0] = parseFloat(args[0]) ; q_goal[1] = parseFloat(args[1])
                 break;
-            case "search_alg":
-                search_alg = arg;
-                break;
-            case "planning_scene":
-                planning_scene = arg;
-                break;
-            case "eps":
-                eps = parseFloat(arg);
-                break;
             default:
                 console.warn("Using default parameters");
-                q_init = [0,0];
-                q_goal = [4,4];
+                q_init = [-1.2,-1.2];
+                q_goal = [5.3, 3.5];
                 search_alg = "A-star";
-                planning_scene = "";
         }
-        // if ((param_parsed[0] !== "search_alg")&&(param_parsed[0] !== "planning_scene"))
-        //     eval(param_parsed[0]+"="+param_parsed[1]);
-        // else
-        //     eval(param_parsed[0]+"=\'"+param_parsed[1]+"\'");
-
     }
-
+    
+    // Convert the Canvas Coordinates to Grid Coordinates
     start = getCoord(q_init);
     goal = getCoord(q_goal);
-
-    // Printing useful information to the console
-    console.log("URL Parsed");
-    console.log("Start: ",q_init," | Goal: ",q_goal);
-    console.log("Algorithm: ",search_alg);
-    console.log("World: ",planning_scene);
 
     // set the world for the planner 
     setPlanningScene();
 
     // initialize search tree from start configurations (RRT-based algorithms)
     T_a = initRRT(q_init, "T_a");
+
     // also initialize search tree from goal configuration (RRT-Connect)
     T_b = initRRT(q_goal, "T_b");
 
     // variables for RRT
     nbhd = 2;
     stepSize = 1*eps;
-    
     tree1 = T_a;
     tree2 = T_b;
     q_new = [];
     target = [];
     tolerance = 2*stepSize;
+    
     saved_iter = 0;
-
-    // initialize graph search algorithms (DFS, BFS, A-star) 
+    
+	// Initialize everything to zero    
     initSearchGraph();
-
-    // flag to continue or stop search iterations
     search_iterate = true;
-
-    // counter for number of search iterations executed
     search_iter_count = 0;
     search_result = "starting";
-
-    // threshold for number of maximum search iterations for certain algorithms
     search_max_iterations = 100000;
-
-    // counter for number of configurations visited
     search_visited = 0;
-
-    // variable to sum final path length
     path_length = 0;
-
     path_found = false;
-    // capture the current system time for timing of successive iterations
-    //   using the given Date object
     cur_time = Date.now();
-
-    // specify minimum number of milliseconds between successive search 
-    //   iterations
     min_msec_between_iterations = 20;
-
-    // create textbar DOM element for text output to browser window
-    textbar = document.createElement('div');
-    textbar.style.zIndex = 0;    // if you still don't see the label, try uncommenting this
-    textbar.style.position = 'absolute';
-    textbar.style.width = window.width-10;
-    textbar.style["font-family"] = "Monospace";
-    textbar.style["font-size"] = "14px";
-    textbar.style.height = 20;
-    textbar.style.color = "#000000";
-    textbar.innerHTML = "4Progress - RRT Canvas";
-    //textbar.style.top = 30 + 'px';  // position textbar wrt. document
-    textbar.style.top = (25 + document.getElementById("myCanvas").offsetTop) + 'px';  // position textbar wrt. canvas
-    textbar.style.left = 30 + 'px';
+    
+    // Add TextBar Stats Element
+    textbar = document.getElementById("textbar");
     document.body.appendChild(textbar);
 }
+
+
 
 //////////////////////////////////////////////////
 /////     ANIMATION AND INTERACTION LOOP
 //////////////////////////////////////////////////
 
 function animate() {
-
-    // IMPORTANT: 
-    //   Search iterations occur asynchronously, once per call to this function.
-    //   This structure does not use an explicit loop to advance the search.
-    //   Such an explicit loop would keep the process inside this function
-    //   without giving control back to the browser run-time.  As a result, 
-    //   the browser would become non-responsive and non-interactive.
-    //   In this asynchronous structure, the animate function is called to 
-    //   first perform one iteration of the search algorithm, then register
-    //   itself as an animation callback to the brower using the 
-    //   requestAnimationFrame() function, and finally returning out of the
-    //   function (giving control back to the browser).  
-    //   requestAnimationFrame() sets this function to be executed 
-    //   again in the very near future.  Such behavior is similar to expected 
-    //   control flow of the setInterval function.
-
-    // render the world to the canvas element
     drawRobotWorld();
 
     // make sure the rrt iterations are not running faster than animation update
     if (search_iterate && (Date.now()-cur_time > min_msec_between_iterations)) {
-
-        // update time marker for last iteration update
         cur_time = Date.now();
-
-        // update iteration count
         search_iter_count++; 
 
-        // call iteration for the selected search algorithm
         switch (search_alg) {
             case "depth-first":
                 search_result = DFS();
@@ -275,33 +198,40 @@ function animate() {
 
     if(search_alg=="A-star" || search_alg=="depth-first" || search_alg=="breadth-first" || search_alg=="greedy-best-first" || search_alg=="dijkstra") {
         textbar.innerHTML = 
-        search_alg + " progress: " + search_result
-        + " <br> "
-        + "start: " + q_init
-        + " | "
-        + "goal: " + q_goal
-        + " <br> "
-        + "iteration: " + search_iter_count
-        + " | "
-        + "visited: " + search_visited
-        + " | "
-        + "queue size: " + queue_size
-        + " <br> "
-        + "path length: " + path_length.toFixed(2);
+        "<h3>Algorithm Statistics:</h3>"
+        + search_alg
+        + " progress: " + search_result
+        + "<br>"
+        + "<strong>Start</strong>: " + q_init
+        + "  |  "
+        + "<strong>Target</strong>: " + q_goal
+        + "<br>"
+        + "<strong>Iteration:</strong> " + search_iter_count
+        + "  |  "
+        + "<strong>Path Length:</strong> " + path_length.toFixed(2)
+        + "<br>"
+        + "<strong>Visited:</strong> " + search_visited
+        + "   |   "
+        + "<strong>Queued:</strong> " + queue_size
+        + "<br>" ;
+        
         //textbar.innerHTML += "<br> mouse ("+ mouse_x+","+mouse_y+")";
     }
 
     else if(search_alg=="RRT" || search_alg=="RRT-connect"){
         textbar.innerHTML = 
-        search_alg + " progress: " + search_result
+        "<h3>Algorithm Statistics:</h3>"
+        + search_alg 
+        + " progress: " + search_result
         + " <br> "
-        + "start: " + q_init
-        + " | "
-        + "goal: " + q_goal
-        + " <br> "
-        + "iteration: " + search_iter_count
-        + " <br> "
-        + "path length: " + path_length.toFixed(2);
+        + "<strong>Start</strong>: " + q_init
+        + "  |  "
+        + "<strong>Target</strong>: " + q_goal
+        + "<br>"
+        + "<strong>Iteration:</strong> " + search_iter_count
+        + "  |  "
+        + "<strong>Path Length:</strong> " + path_length.toFixed(2)
+        + "<br>";
     }
 
     else{
@@ -339,7 +269,7 @@ function BFS() {
     curr = visit_queue.shift();
     var xc = curr[0] ; var yc = curr[1];
     G[xc][yc].queued = false;
-    ctx.fillStyle = "#d6f5f5";
+    ctx.fillStyle = "#ffe8a5";
     ctx.fillRect(xformWorldViewX(G[xc][yc].x)-3,xformWorldViewY(G[xc][yc].y)-3,6,6);
 
     if(xc == goal[0] && yc==goal[1] || G[goal[0]][goal[1]].visited==true) {
@@ -359,7 +289,7 @@ function BFS() {
             G[xi][yi].parent = curr;
             G[xi][yi].distance = G[xc][yc].distance + gcost(curr,[xi,yi]);
             search_visited+=1;
-            ctx.fillStyle = "#42027a";
+            ctx.fillStyle = "#52483F";
             ctx.fillRect(xformWorldViewX(G[xi][yi].x)-3,xformWorldViewY(G[xi][yi].y)-3,6,6);
             // console.log(curr,next,G[xi][yi].distance,G[xi][yi].visited, G[xi][yi].priority,G[xi][yi].queued,G[xi][yi].parent,search_visited)
         }
@@ -377,7 +307,7 @@ function DFS() {
     curr = visit_queue.pop();
     var xc = curr[0] ; var yc = curr[1];
     G[xc][yc].queued = false;
-    ctx.fillStyle = "#d6f5f5";
+    ctx.fillStyle = "#ffe8a5";
     ctx.fillRect(xformWorldViewX(G[xc][yc].x)-3,xformWorldViewY(G[xc][yc].y)-3,6,6);
     
     if((curr[0] == goal[0] && curr[1]==goal[1]) || G[goal[0]][goal[1]].visited==true) {
@@ -397,7 +327,7 @@ function DFS() {
             G[xi][yi].parent = curr;
             G[xi][yi].distance = G[xc][yc].distance + gcost(curr,[xi,yi]);
             search_visited+=1;
-            ctx.fillStyle = "#42027a";
+            ctx.fillStyle = "#52483F";
             ctx.fillRect(xformWorldViewX(G[xi][yi].x)-3,xformWorldViewY(G[xi][yi].y)-3,6,6);
         }
     }
@@ -414,7 +344,7 @@ function Dijkstra() {
     curr = visit_queue.get();
     var xc=curr[0] ; var yc=curr[1];
     G[xc][yc].queued = false;
-    ctx.fillStyle = "#d6f5f5";
+    ctx.fillStyle = "#ffe8a5";
     ctx.fillRect(xformWorldViewX(G[xc][yc].x)-3,xformWorldViewY(G[xc][yc].y)-3,6,6);
 
     if(xc == goal[0] && yc==goal[1] || G[goal[0]][goal[1]].visited==true) {
@@ -429,6 +359,7 @@ function Dijkstra() {
         var next = nbrs[i];
         var xi=next[0]; var yi=next[1];
         var new_cost = G[xc][yc].distance + gcost(curr,next);
+        
 
         if(G[xi][yi].visited==false || new_cost < G[xi][yi].distance) {
             G[xi][yi].distance = new_cost;
@@ -439,8 +370,9 @@ function Dijkstra() {
             G[xi][yi].queued = true;
             G[xi][yi].parent = curr;
             search_visited+=1;
-            ctx.fillStyle = "#42027a";
+            ctx.fillStyle = "#52483F";
             ctx.fillRect(xformWorldViewX(G[xi][yi].x)-3,xformWorldViewY(G[xi][yi].y)-3,6,6);
+
         }
     }
     return "iterating";
@@ -456,7 +388,7 @@ function Greedy() {
     curr = visit_queue.get();
     var xc=curr[0] ; var yc=curr[1];
     G[xc][yc].queued = false;
-    ctx.fillStyle = "#d6f5f5";
+    ctx.fillStyle = "#ffe8a5";
     ctx.fillRect(xformWorldViewX(G[xc][yc].x)-3,xformWorldViewY(G[xc][yc].y)-3,6,6);
 
     if(xc==goal[0] && yc==goal[1] || G[goal[0]][goal[1]].visited==true) {
@@ -481,7 +413,7 @@ function Greedy() {
             G[xi][yi].queued = true;
             G[xi][yi].parent = curr;
             search_visited+=1;
-            ctx.fillStyle = "#42027a";
+            ctx.fillStyle = "#52483F";
             ctx.fillRect(xformWorldViewX(G[xi][yi].x)-3,xformWorldViewY(G[xi][yi].y)-3,6,6);
         }
     }
@@ -498,7 +430,7 @@ function iterateGraphSearch() {
     curr = visit_queue.get();
     var xc=curr[0] ; var yc=curr[1];
     G[xc][yc].queued = false;
-    ctx.fillStyle = "#d6f5f5";
+    ctx.fillStyle = "#ffe8a5";
     ctx.fillRect(xformWorldViewX(G[xc][yc].x)-3,xformWorldViewY(G[xc][yc].y)-3,6,6);
 
     if(xc==goal[0] && yc==goal[1] || G[goal[0]][goal[1]].visited==true) {
@@ -523,7 +455,7 @@ function iterateGraphSearch() {
             G[xi][yi].queued = true;
             G[xi][yi].parent = curr;
             search_visited+=1;
-            ctx.fillStyle = "#42027a";
+            ctx.fillStyle = "#52483F";
             ctx.fillRect(xformWorldViewX(G[xi][yi].x)-3,xformWorldViewY(G[xi][yi].y)-3,6,6);
         }
     }
@@ -589,11 +521,6 @@ function iterateRRTStar() {
     var rand = randomConfig(),
         nearest = findNearestNeighbor(rand,T_a),
         vertex = newConfig(nearest, rand, T_a);
-        // near = findNeighborhood(rand, T_a),
-        // parent_idx = chooseParent(rand, nearest, near, T_a),
-        // vertex = newConfig(parent_idx, rand, T_a),
-        // parent = T_a.vertices[parent_idx].vertex,
-        // cost = T_a.vertices[parent_idx].cost + distance(parent,vertex);
 
     if(distance(vertex, q_goal) <= 1.4*stepSize)
         vertex = q_goal;
@@ -826,46 +753,16 @@ function drawRobotWorld() {
     // draw start and goal configurations
     c = document.getElementById("myCanvas");
     ctx = c.getContext("2d");
-    ctx.fillStyle = "#0000FF";
-    ctx.fillRect(xformWorldViewX(q_init[0])-5,xformWorldViewY(q_init[1])-5,10,10);
-    ctx.fillStyle = "#00FF00";
-    ctx.fillRect(xformWorldViewX(q_goal[0])-5,xformWorldViewY(q_goal[1])-5,10,10);
+    ctx.fillStyle = "red";
+    ctx.fillRect(xformWorldViewX(q_init[0])-5,xformWorldViewY(q_init[1])-5,12,12);
+    ctx.fillStyle = "green";
+    ctx.fillRect(xformWorldViewX(q_goal[0])-5,xformWorldViewY(q_goal[1])-5,12,12);
 
     // draw robot's world
     for (j=0;j<range.length;j++) { 
-        ctx.fillStyle = "#8888FF";
+        ctx.fillStyle = "#e4e4e4";
         ctx.fillRect(xformWorldViewX(range[j][0][0]),xformWorldViewY(range[j][1][0]),xformWorldViewX(range[j][0][1])-xformWorldViewX(range[j][0][0]),xformWorldViewY(range[j][1][1])-xformWorldViewY(range[j][1][0]));
     }
-}
-
-function drawHighlightedPath(path) {
-    ctx = c.getContext("2d");
-    ctx.strokeStyle="#0000FF";
-    ctx.lineWidth=4;
-    ctx.beginPath();
-    for (i=1;i<path.length;i++) {
-        ctx.moveTo(xformWorldViewX(path[i-1].vertex[0]),xformWorldViewY(path[i-1].vertex[1]));
-        ctx.lineTo(xformWorldViewX(path[i].vertex[0]),xformWorldViewY(path[i].vertex[1]));
-    }
-    ctx.stroke();
-}
-
-function drawHighlightedPathGraph(current_node) {
-    ctx.strokeStyle="#cc3333";
-    ctx.lineWidth=1;
-    ctx.beginPath();
-    path_length = 0; 
-    q_path_ref = current_node; 
-    while (q_path_ref.distance > 0) {
-        // KE: find cleaner way to draw edges
-        //draw_2D_edge_configurations([q_path_ref.x,q_path_ref.y],[q_path_ref.parent.x,q_path_ref.parent.y]);
-        ctx.moveTo(xformWorldViewX(q_path_ref.x),xformWorldViewY(q_path_ref.y));
-        ctx.lineTo(xformWorldViewX(q_path_ref.parent.x),xformWorldViewY(q_path_ref.parent.y));
-        path_length += Math.sqrt(Math.pow(q_path_ref.x-q_path_ref.parent.x,2)+Math.pow(q_path_ref.y-q_path_ref.parent.y,2));
-        q_path_ref = q_path_ref.parent;
-    }
-    ctx.closePath();
-    ctx.stroke();
 }
 
 function initSearchGraph() {
@@ -920,40 +817,29 @@ function setPlanningScene() {
     range = []; // global variable
 
     // world boundary
-    range[0] = [ [-1.8,5.8],[-1.8,-1] ];
-    range[1] = [ [-1.8,5.8],[5,5.8] ];
-    range[2] = [ [-1.8,-1], [-1.8,5.8] ];
-    range[3] = [ [5,5.8],   [-1.8,5.8] ];
+    range[0] = [ [-1.9,7.9],[-1.9,-1.7] ];
+    range[1] = [ [-1.9,7.9],[5.7,5.9] ];
+    range[2] = [ [-1.9,-1.7], [-1.9,5.9] ];
+    range[3] = [ [7.7,7.9],   [-1.9,5.9] ];
 
     if (typeof planning_scene === 'undefined')
-        planning_scene = 'empty';
+        planning_scene = 'multi_part';
 
-    if (planning_scene == 'misc') {
-        /*  misc stuff with narrow opening */
-        range[4] = [ [1,2],[1,2] ];
-        range[5] = [ [3,3.3],[1,4] ];
-        range[6] = [ [0.6,0.7],[0.4,0.7] ];
-        range[7] = [ [3.7,3.9],[-0.8,5] ];
-    }
-    else if (planning_scene == 'narrow1') {
-        /*  narrow path 1 */
-        range[4] = [ [1,3],[4,5] ];
-        range[5] = [ [1,3],[-1,2] ];
-        range[6] = [ [1,1.95],[2,3.8] ];
-    }
-    else if (planning_scene == 'narrow2') {
-        /*  narrow path 2 */
-        range[4] = [ [1,3],[4,5] ];
-        range[5] = [ [1,3],[-1,2] ];
-        range[6] = [ [1,1.9],[2,3.8] ];
-        range[7] = [ [2.1,3],[2.2,4] ];
-    }
-    else if (planning_scene == 'three_sections') {
-        /*  three compartments */
-        range[4] = [ [1,1.3],[4,5] ];
-        range[5] = [ [1,1.3],[-1,3.5] ];
-        range[6] = [ [2.7,3],[-1,0] ];
-        range[7] = [ [2.7,3],[.5,5] ];
+	if (planning_scene == 'multi_part') {
+        range[4] = [ [0.2,0.4], [-1.9,-1.5]];
+        range[5] = [ [0.2,0.4], [-1.2, 4.1]];
+        range[6] = [ [0.2,0.4],[4.4,5.9]];
+        
+        range[7] = [ [1.8,2],[-1.9,0.8]];
+        range[8] = [ [1.8,2],[1.1,5.4]];
+        
+        range[9] = [ [3.6,6.5],[0.6,0.8]];
+        range[10] = [ [3.6,6.5],[4.9,5.1]];
+        range[11] = [ [3.6,3.8],[1.1,4.6]];
+        range[12] = [ [6.3,6.5],[1.1,4.6]];
+
+        range[13] = [ [3.6,4.5],[2.6,2.8]];
+        range[14] = [ [4.9,6.5],[2.6,2.8]];
     }
 }
 
@@ -1002,7 +888,7 @@ function insertTreeVertex(tree, q, parent, cost) {
 function draw_2D_configuration(q) {
     c = document.getElementById("myCanvas");
     ctx = c.getContext("2d");
-    ctx.fillStyle = "#3498db";
+    ctx.fillStyle = "#80685E";
     ctx.fillRect(xformWorldViewX(q[0])-3,xformWorldViewY(q[1])-3,6,6);
 }
 
@@ -1012,7 +898,7 @@ function draw_2D_edge_configurations(q1,q2) {
     ctx.beginPath();
     ctx.moveTo(xformWorldViewX(q1[0]),xformWorldViewY(q1[1]));
     ctx.lineTo(xformWorldViewX(q2[0]),xformWorldViewY(q2[1]));
-    ctx.strokeStyle = "#1a5276"; 
+    ctx.strokeStyle = "#2a2e2f"; 
     ctx.stroke();
 }
 
@@ -1170,7 +1056,7 @@ function heuristic(node1,node2,version) {
         break;
 
         default:
-        // console.warn('Using Euclidean Heuristic as default');
+        console.warn('Using Euclidean Heuristic as default');
         hue = Math.sqrt(dx*dx + dy*dy);
     }
     return strip(hue);
@@ -1220,7 +1106,3 @@ function draw_path() {
     }
     console.log("Path Length: ",strip(path_length));
 }
-
-</script>
-</body>
-</html>
