@@ -141,7 +141,6 @@ function initSearch() {
     
     // Add TextBar Stats Element
     textbar = document.getElementById("textbar");
-    document.body.appendChild(textbar);
 }
 
 
@@ -235,21 +234,24 @@ function animate() {
     }
 
     else{
-        textbar.innerHTML = 
-        search_alg + " progress: " + search_result
+        textbar.innerHTML =
+        "<h3>Algorithm Statistics:</h3>"
+        + search_alg 
+        + " progress: " + search_result
         + " <br> "
-        + "start: " + q_init
-        + " | "
-        + "goal: " + q_goal
-        + " <br> "
-        + "iteration: " + search_iter_count
-        + " <br> "
-        + "path optimizing:" + path_found + " | 2000 iterations"
-        + " <br> "
-        + "path length: " + path_length.toFixed(2);
+        + "<strong>Start</strong>: " + q_init
+        + "  |  "
+        + "<strong>Target</strong>: " + q_goal
+        + "<br>"
+        + "<strong>Iteration:</strong> " + search_iter_count
+        + "  |  "
+        + "<strong>Path Length:</strong> " + path_length.toFixed(2)
+        + "<br>"
+        + "<strong>Optimization</strong> | 2000 Iterations: " + path_found
+        + "<br>";
     }
 
-    textbar.innerHTML += "<br> mouse ("+ xformViewWorldX(mouse_x)+","+xformViewWorldY(mouse_y)+")";
+    textbar.innerHTML += "<br> Mouse Position: ("+ xformViewWorldX(mouse_x)+","+xformViewWorldY(mouse_y)+")";
 
     // callback request for the animate function be called again
     //   more details online:  http://learningwebgl.com/blog/?p=3189

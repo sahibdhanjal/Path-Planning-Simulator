@@ -1,0 +1,68 @@
+body{
+	background-color: #e4e4e4;
+	font: Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+	width: 98%;
+}
+
+h1,h2 {
+	font-family: Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+	color:#3D2A24; 
+	text-align: center;
+    margin: 5px;
+}
+
+p {
+    font-size: 12pt;
+    padding: 10px;
+    color: white;
+    text-align: center;
+    background-color: #555555;
+}
+
+button {
+    background: none !important;
+    border: none;
+    padding: 0! important;
+    cursor: pointer;
+    outline: inherit !important;
+    background-color: inherit !important;
+}
+
+input[type=button] {
+    font: 18pt;
+    font-size:70%;
+    cursor: pointer;
+    width: 120px;
+    background-color: #555555;
+    color: white;
+    border-radius: 8px;
+}
+
+input[type=button]:hover, active {
+    background-color: #e4e4e4;
+    border: 2px solid #555555;
+    color: black;
+    border-radius: 8px;
+}
+
+#container {
+	max-width: 1000px;
+	margin: auto;
+}
+
+#myCanvas {
+	background-color: #fafafa;
+    text-align: center;
+    margin: 5px;
+}
+
+a {
+    text-decoration: none;
+    color: #5b5b5b;
+
+}
+
+a:hover {
+    color: black;
+
+}

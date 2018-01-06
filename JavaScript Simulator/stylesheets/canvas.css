@@ -1,0 +1,41 @@
+#SearchAlgo{
+	max-width: 1000px;
+	margin: auto;
+}
+
+#stats {
+	position: absolute;
+	z-index: 50;
+	text-align: center;
+	color: white;
+	float: right;
+	cursor: move;
+	left: 1190px;
+	top: 135px;
+}
+
+#toggle {
+	position: relative;
+	float: right;
+	z-index: 999;
+	font: 10pt Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+	left: 190px;
+	top: 5px;
+	width: 21px;
+    border: 2px solid #555555;
+    background-color: black;
+    border-radius: 50%;
+}
+
+#textbar {
+	position: absolute;
+	background-color: #2a2e2f;
+	opacity: 0.7;
+	height: 145px;
+	width: 220px;
+	text-align: center;;
+	color: white;
+	z-index: 100;
+	float: left;
+	font: 9pt Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+}
