@@ -24,7 +24,6 @@ The srepository also includes implementations of the following frontier based ex
   <li>Faigl's Frontier Algorithm</li>
   <li>Cluster Allocate Cover</li>
 </ol>
-<strong>NOTE:</strong> The exploration algorithms were implemented by Arjun Ram who co-authored the paper Cluster, Allocate, and Cover with Prof. Avinash Gautam.
 
 ## Javascript Simulator
 A simple extension of the simulator has been implemented in JavaScript for ease of viewing in web browsers. The JavaScript version contains the following algorithms:
