@@ -3,11 +3,11 @@
 	<head>
 	    <title>Path Planning Simulator</title>
 	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-		
+
 		<link rel="stylesheet" type="text/css" href="stylesheets/canvas.css">
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css">
 
-	    
+
 	</head>
 
 	<body >
@@ -25,11 +25,13 @@
 				<input type="button" title="Click to Start" value="RRT-Connect" onclick="setAlgo(6)">
 				<input type="button" title="Click to Start" value="RRT-Star" onclick="setAlgo(7)">
 			</div>
-			
+
 			<canvas id="myCanvas" width = 1000 height = 800> </canvas>
-			
+
 			<div id="stats" title="Drag to Move">
-				<div id="textbar"></div>
+				<div id="textbar">
+					<p style="padding: 42px; margin: auto">Press one of the buttons above to start!</p>
+				</div>
 				<button id="toggle" title="Toggle On/Off " onclick="disappear()"><strong>X</strong></button>
 			</div>
 		</div>
