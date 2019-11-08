@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	    <title>Path Planning Simulator</title>
+	    <title>Robotics Path Planning Simulator</title>
 	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 		<link rel="stylesheet" type="text/css" href="stylesheets/canvas.css">
@@ -13,7 +13,7 @@
 	<body >
 		<div id = "container">
 
-			<h2 title="Back to Main website"><a href="#">Path Planner Simulation</a></h2>
+			<h2 title="Back to Main website"><a href="#">Robotics Path Planner Simulation</a></h2>
 
 			<div id="SearchAlgo">
 				<input type="button" title="Click to Start" value="Depth First Search" onclick="setAlgo(0)">
@@ -24,6 +24,8 @@
 				<input type="button" title="Click to Start" value="RRT" onclick="setAlgo(5)">
 				<input type="button" title="Click to Start" value="RRT-Connect" onclick="setAlgo(6)">
 				<input type="button" title="Click to Start" value="RRT-Star" onclick="setAlgo(7)">
+				<input type="button" title="Click to Stop" value="Stop" onclick="setAlgo(8)">
+				<input type="button" title="Click to Refresh" value="Refresh" onclick="setAlgo(9)">
 			</div>
 
 			<canvas id="myCanvas" width = 1000 height = 800> </canvas>
@@ -34,6 +36,9 @@
 				</div>
 				<button id="toggle" title="Toggle On/Off " onclick="disappear()"><strong>X</strong></button>
 			</div>
+		</div>
+		<div id="container">
+			<p style="font-family: Futura, ‘Century Gothic’, AppleGothic, sans-serif;">Credits: Sahib Singh Dhanjal & Jacob John</p>
 		</div>
 	    <script type="text/javascript" src="scripts/planners.js"></script>
 		<script type="text/javascript" src="scripts/interaction.js"></script>

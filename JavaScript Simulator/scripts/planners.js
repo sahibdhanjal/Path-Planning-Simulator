@@ -31,11 +31,18 @@ function init(algo) {
 			break;
 		case 7:
 			search_alg = "RRT-star";
-			break;
+            break;
+        case 8:
+            search_alg = "";
+            break;
+        case 9:
+            location.reload();
 	}
 
     initSearch(algo);
-    animate();
+    if(search_alg != ""){
+        animate();
+    }
 }
 
 
@@ -183,8 +190,7 @@ function animate() {
                 search_result = iterateRRTStar();
                 break;
             default: 
-                console.warn('search_canvas: search algorithm not found, using rrt as default');
-                search_result = iterateRRT();
+                
                 break;
         }
     }
@@ -192,6 +198,8 @@ function animate() {
     var queue_size;
     if(search_alg=="depth-first" || search_alg=="breadth-first" || search_alg=="RRT" || search_alg=="RRT-connect" || search_alg == "RRT-star")
         queue_size = visit_queue.length;
+    else if(search_alg=="")
+        queue_size = 0;
     else
         queue_size = visit_queue.size();
 
@@ -232,7 +240,11 @@ function animate() {
         + "<strong>Path Length:</strong> " + path_length.toFixed(2)
         + "<br>";
     }
-
+    else if(search_alg == ""){
+        textbar.innerHTML = "<p style = "
+        + "'padding: 42px; margin: auto'>" 
+        + "Press one of the buttons above to start! </p>";
+    }
     else{
         textbar.innerHTML =
         "<h3>Algorithm Statistics:</h3>"
